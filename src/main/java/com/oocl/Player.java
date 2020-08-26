@@ -1,5 +1,6 @@
 package com.oocl;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class Player {
@@ -10,6 +11,8 @@ public class Player {
     public Player(String name, List<String> pokers) {
         this.name = name;
         this.pokers = pokers;
+
+        pokers.sort(Comparator.comparingInt(o -> PokerService.pokerMap.get(o.charAt(0))));
     }
 
     public String getName() {

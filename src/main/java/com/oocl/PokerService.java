@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class PokerService {
 
-    private static Map<Character, Integer> pokerMap = new HashMap<>();
+    public static Map<Character, Integer> pokerMap = new HashMap<>();
     private static char[] pokerArr = {'2','3','4','5','6','7','8','9','T','J','Q','K','A'};
 
     static {
