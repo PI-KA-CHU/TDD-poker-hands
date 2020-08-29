@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class PokerService {
 
@@ -31,30 +30,62 @@ public class PokerService {
         int level1 = mapToTypeLevel.get(cardType1);
         int level2 = mapToTypeLevel.get(cardType2);
         if (level1 > level2) {
-            String result = player1.getPokers().stream().collect(Collectors.joining(""));
+            String result = getPokersString(player1);
             return new Result(player1, cardType1, result);
         } else if (level1 < level2) {
-            String result = player2.getPokers().stream().collect(Collectors.joining(""));
+            String result = getPokersString(player2);
             return new Result(player2, cardType2, result);
         } else {
-            List<String> pokers1 = player1.getPokers();
-            List<String> pokers2 = player2.getPokers();
-
-            for (int pokerIndex = pokers1.size() - 1; pokerIndex >= 0; pokerIndex--) {
-                char maxPoker1 = getPokerByIndex(pokers1, pokerIndex);
-                char maxPoker2 = getPokerByIndex(pokers2, pokerIndex);
-
-                if (!isTwoPokerEquals(maxPoker1, maxPoker2)){
-                    if (isPoker1BiggerThanPoker2(maxPoker1, maxPoker2)) {
-                        return new Result(player1, cardType1, mapToFullName.get(maxPoker1));
-                    } else {
-                        return new Result(player2, cardType2, mapToFullName.get(maxPoker2));
-                    }
-                }
+            switch (cardType1){
+                case PokersType.HIGH_CARD:
+                    return compareInHighCard(player1, player2);
+                case PokersType.STRAIGHT_FLUSH:
+                    return compareInStraightFlush(player1, player2);
             }
 
-            return new Result(true);
+            return null;
         }
+    }
+
+    private String getPokersString(Player player2) {
+        return player2.getPokers().stream().collect(Collectors.joining(""));
+    }
+
+    private Result compareInHighCard(Player player1, Player player2) {
+        List<String> pokers1 = player1.getPokers();
+        List<String> pokers2 = player2.getPokers();
+
+        for (int pokerIndex = pokers1.size() - 1; pokerIndex >= 0; pokerIndex--) {
+            char maxPoker1 = getPokerByIndex(pokers1, pokerIndex);
+            char maxPoker2 = getPokerByIndex(pokers2, pokerIndex);
+
+            if (!isTwoPokerEquals(maxPoker1, maxPoker2)){
+                if (isPoker1BiggerThanPoker2(maxPoker1, maxPoker2)) {
+                    return new Result(player1, PokersType.HIGH_CARD, mapToFullName.get(maxPoker1));
+                } else {
+                    return new Result(player2, PokersType.HIGH_CARD, mapToFullName.get(maxPoker2));
+                }
+            }
+        }
+
+        return new Result(true);
+    }
+
+    private Result compareInStraightFlush(Player player1, Player player2){
+        char lastPokerNumber1 = getLastPokerNumber(player1);
+        char lastPokerNumber2 = getLastPokerNumber(player2);
+
+        if (isPoker1BiggerThanPoker2(lastPokerNumber1, lastPokerNumber2)) {
+            return new Result(player1, PokersType.STRAIGHT_FLUSH, getPokersString(player1));
+        }else if (isPoker1BiggerThanPoker2(lastPokerNumber2, lastPokerNumber1)){
+            return new Result(player2, PokersType.STRAIGHT_FLUSH, getPokersString(player2));
+        }
+
+        return new Result(true);
+    }
+
+    private char getLastPokerNumber(Player player2) {
+        return player2.getPokers().get(player2.getPokers().size() - 1).charAt(0);
     }
 
     private boolean isPoker1BiggerThanPoker2(char poker1, char poker2) {
@@ -75,18 +106,18 @@ public class PokerService {
         char flush = pokers.get(0).charAt(1);
         for (int i = 0; i < pokers.size(); i++) {
             if (flush != pokers.get(i).charAt(1)) {
-                return "High Card";
+                return PokersType.HIGH_CARD;
             }
         }
 
         int straight = pokerMap.get(pokers.get(0).charAt(0));
         for (int i = 1; i < pokers.size(); i++) {
             if (straight != pokerMap.get(pokers.get(i).charAt(0)) - 1) {
-                return "High Card";
+                return PokersType.HIGH_CARD;
             }
             straight = pokerMap.get(pokers.get(i).charAt(0));
         }
 
-        return "Straight Flush";
+        return PokersType.STRAIGHT_FLUSH;
     }
 }

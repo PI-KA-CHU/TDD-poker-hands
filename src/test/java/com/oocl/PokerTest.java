@@ -72,4 +72,34 @@ public class PokerTest {
 
         Assert.assertEquals("jim wins. - with Straight Flush: 5D6D7D8D9D",result.printResult());
     }
+
+
+
+    @Test
+    public void should_return_player1_when_compare_given_player1_5D6D7D8D9D_player2_6D7D8D9DTD() {
+        List<String> poker1 = Arrays.asList("5D", "6D", "7D", "8D", "9D");
+        List<String> poker2 = Arrays.asList("6D", "7D", "8D", "9D", "TD");
+        Player player1 = new Player("jim",poker1);
+        Player player2 = new Player("ben",poker2);
+
+        PokerService pokerService = new PokerService();
+        Result result = pokerService.compare(player1,player2);
+
+        Assert.assertEquals("ben wins. - with Straight Flush: 6D7D8D9DTD",result.printResult());
+    }
+
+    @Test
+    public void should_return_player1_when_compare_given_player1_5D6D7D8D9D_player2_5D6D7D8D9D() {
+        List<String> poker1 = Arrays.asList("5D", "6D", "7D", "8D", "9D");
+        List<String> poker2 = Arrays.asList("5D", "6D", "7D", "8D", "9D");
+        Player player1 = new Player("jim",poker1);
+        Player player2 = new Player("ben",poker2);
+
+        PokerService pokerService = new PokerService();
+        Result result = pokerService.compare(player1,player2);
+
+        Assert.assertEquals("Tie.",result.printResult());
+    }
+
+
 }
