@@ -3,35 +3,22 @@ package com.oocl;
 public class Result {
 
     private Player winner;
-    private String wintype;
+    private String winType;
     private String winResult;
+    private boolean isTie;
 
-    public Player getWinner() {
-        return winner;
-    }
-
-    public void setWinner(Player winner) {
+    public Result(Player winner, String winType, String winResult) {
         this.winner = winner;
-    }
-
-    public String getWintype() {
-        return wintype;
-    }
-
-    public void setWintype(String wintype) {
-        this.wintype = wintype;
-    }
-
-    public String getWinResult() {
-        return winResult;
-    }
-
-    public void setWinResult(String winResult) {
+        this.winType = winType;
         this.winResult = winResult;
+    }
+
+    public Result(boolean isTie) {
+        this.isTie = isTie;
     }
 
     public String printResult(){
 
-        return String.format("%s wins. - with %s: %s", winner.getName(), wintype, winResult);
+        return isTie ? "Tie." : String.format("%s wins. - with %s: %s", winner.getName(), winType, winResult);
     }
 }
